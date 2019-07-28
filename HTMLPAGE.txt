@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>Fillinvest Crm</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+
+    <!-- <script src="./js/jquery.min.js"></script>
+    <script src="./js/popper.min.js"></script> -->
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+    <script src="./js/bootstrap.min.js"></script>
+
+</head>
+
+<body>
+
+    <div class="container-fluid contain" style="background-color: cadetblue">
+        <div class="row">
+            <div class="col-md-6">
+                <h3 class="text-white" id="name"></h3>
+                <p style="color:yellow;">TOTAL RELATIONSHIP Active Accounts :<span id="active"></span>
+                    <br>VALUE
+                    <span class="offset-md-2">Inactive
+                        Accounts :</span><span id="inactive"></span></p>
+                <h3 id="invalid" style="text-align: center;color:red;float: right;"></h3>
+
+            </div>
+            <div class="col-md-6">
+                <p style="float: right;">
+                    <button class="button"><b id="Alert">ALERT LEVEL1</b></button><br>
+                    <button class="button1"><strong id="Status">COMPLAINANT</strong></button>
+                   
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="container-fluid contain1"
+        style="border-left:1px solid;border-right:1px solid;border-bottom: 1px solid; ">
+        <div class="row">
+            <div class="col-md-2 heading_col">
+                <div class="content">
+                    <h6>CUSTOMER DETAILS</h6>
+                </div>
+                <div class="scrollbar c">
+                    <p>Gender:
+                        <br><b id="gender"></b><br>
+                        Marital Status:
+                        <br><b id="marital_status"></b><br>
+                        Birth:
+                        <br><b id="birth"></b><br>
+                        SDO USER ID
+                        <br><b id="sdo"></b><br>
+                        T.I.N
+                        <br><b id="tin"></b><br>
+                        NATIONALITY
+                        <br><b id="nationality"></b>
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-5 heading_col">
+                <div class="content">
+                    <h6>ACTIVE ACCOUNT</h6>
+
+                </div>
+                <div class="scrollbar c1">
+                    <table class="table table-borderless" id="active_account">
+
+                    </table>
+                </div>
+            </div>
+            <div class="col-md-5 heading_col">
+                <div class="content">
+                    <h6>MOST RECENT TRANSACTION</h6>
+
+                </div>
+                <div class="scrollbar c2">
+                    <table class="table table-borderless" id="most_recent_transaction">
+
+                    </table>
+                </div>
+            </div>
+
+        </div>
+        <div class="row" style="margin-bottom: 15px;">
+            <div class="col-md-2 heading_col">
+                <div class="content">
+                    <h6>OTHER BUSINESS PARTNERS</h6>
+
+                </div>
+                <div class="scrollbar c">
+                    <p>Spouse:
+                        <br><b id="spouse"></b><br>
+                        ALF:
+                        <br><b id="alf"></b><br>
+                        Co-Owner/s:
+                        <br><b id="co-owner"></b><br>
+                        Co-Borro/s
+                        <br><b id="co-borr"></b><br>
+                        Authorized Representation
+                        <br><b id="authorized"></b>
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-5 heading_col">
+                <div class="content">
+                    <h6>INACTIVE ACCOUNT</h6>
+
+                </div>
+                <div class="scrollbar c1">
+                    <table class="table table-borderless" id="inactive_account">
+
+                    </table>
+                </div>
+            </div>
+            <div class="col-md-5 heading_col">
+                <div class="content">
+                    <h6>MOST RECENT OPEN TICKETS</h6>
+
+                </div>
+                <div class="scrollbar c2">
+                    <table class="table table-borderless" id="most_recent_open">
+
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+
+        var url_string = window.location.href
+        var url = new URL(url_string);
+        console.log(url);
+        var number = url.searchParams.get("phonenumber");
+        console.log(number);
+
+        // mobile="http://localhost:9095/crm/getCrmDetailsByPhoneNumber/9944556677";
+
+        $(document).ready(function () {
+
+            $.ajax({
+                url: "http://localhost:8080/Filinvest/crm/getCrmDetailsByPhoneNumber/" + number + "", //getting deails from db
+                method: "GET",
+                dataType: "json",
+
+                success: function (data) {
+                    console.log(data);
+
+                    $('#name').html(data["name"]);
+
+                    var alert = data["alert"];
+                    var status = data["status"];
+                    if (alert != undefined || alert != null || alert.trim() != "")
+                        $("#Alert").replaceWith("<b>" + alert + "</b>");
+
+                    if (status != undefined || status != null || status.trim() != "")
+                        $("#Status").replaceWith("<b>" + status + "</b>");
+
+                    var activedata = data["totalActiveAccounts"] + ":" + data["totalActiveAccountsvalue"];
+                    var inactivedata = data["totalInactiveAccounts"] + ":" + data["totalInactiveAccountsvalue"];
+                    $('#active').html(activedata);
+                    $('#inactive').html(inactivedata);
+
+                    // customer details
+
+                    $('#gender').html(data["gender"]);
+                    $('#marital_status').html(data["martialStatus"]);
+                    $('#birth').html(data["birthDate"]);
+                    $('#sdo').html(data["sdouserId"]);
+                    $('#tin').html(data["tin"]);
+                    $('#nationality').html(data["Nationality"]);
+
+                    // other business partners details
+
+                    $('#spouse').html(data["spouse"]);
+                    $('#alf').html(data["aif"]);
+                    $('#co-owner').html(data["coOwner"]);
+                    $('#co-borr').html(data["coBorrower"]);
+                    $('#authorized').html(data["authorizeDrep"]);
+
+                    // Active account details
+
+                    var trHTML = "<thead></thead>  <tr><th scope='col'>CONTRACT NO</th><th scope='col'>PROJECT</th><th scope='col'>FINSCHEME</th><th scope='col'>DELINQUENCY</th><th scope='col'>PORTFOLID SALE</th></tr></thead>";
+                    var count = data["activeAccounts"].length;
+                    //sorting based on Delinquency
+                    var first = [];
+                    var second = [];
+
+                    for (var j = 0; j < data["activeAccounts"].length; j++) {
+
+                        if (data.activeAccounts[j].acDelinquency == "Over 120 Days Past Due" || data.activeAccounts[j].acDelinquency == "91-120 Days Past Due" || data.activeAccounts[j].acDelinquency == "61-90 Days Past Due" || data.activeAccounts[j].acDelinquency == "31-60 Days Past Due" || data.activeAccounts[j].acDelinquency == "1-30 Days Past Due")
+                            first.push(data.activeAccounts[j].acDelinquency + j);
+
+                        else
+                            second.push(data.activeAccounts[j].acDelinquency + j);
+
+                    }
+
+                    first.sort();
+                    first.reverse();
+
+                    var third = first.concat(second);
+                    //showing the active account details
+                    for (var i = 0; i < third.length && count <= 5; i++) {
+                        var numb = third[i];
+                        var value = numb.charAt(numb.length - 1);
+                        if (data.activeAccounts[value].acDelinquency == "Over 120 Days Past Due" || data.activeAccounts[value].acDelinquency == "91-120 Days Past Due" || data.activeAccounts[value].acDelinquency == "61-90 Days Past Due" || data.activeAccounts[value].acDelinquency == "31-60 Days Past Due" || data.activeAccounts[value].acDelinquency == "1-30 Days Past Due") {
+                            trHTML = trHTML +
+                                '<tbody><tr><td >' + data.activeAccounts[value].acContractNo +
+                                '</td><td >' + data.activeAccounts[value].acProject +
+                                '</td><td >' + data.activeAccounts[value].acFinscheme +
+                                '</td><td style="color:red;">' + data.activeAccounts[value].acDelinquency +
+                                '</td><td >' + data.activeAccounts[value].acPortfoliosale +
+                                '</td></tr></tbody>';
+                        }
+                        else {
+                            trHTML = trHTML +
+                                '<tbody><tr><td >' + data.activeAccounts[value].acContractNo +
+                                '</td><td >' + data.activeAccounts[value].acProject +
+                                '</td><td >' + data.activeAccounts[value].acFinscheme +
+                                '</td><td >' + data.activeAccounts[value].acDelinquency +
+                                '</td><td >' + data.activeAccounts[value].acPortfoliosale +
+                                '</td></tr></tbody>';
+                        }
+
+                    }
+
+                    if (count < 5) {
+                        var msg = "-NOTHING";
+                        var msg2 = "FOLLOWS-";
+                        trHTML = trHTML + '<tbody><tr><td colspan="5">' + msg + '<br>' + msg2 + '</td></tr></tbody>';
+                    }
+                    else if (count >= 5) {
+                        var msg3 = "See Others in CALM";
+                        trHTML = trHTML + '<tbody><tr><td colspan="5">' + msg3 + '</td></tr></tbody>';
+                    }
+
+                    $('#active_account').append(trHTML);
+
+                    // Inactive account details
+
+                    var trHTML = "<thead></thead>  <tr><th>CONTRACT NO</th><th>PROJECT</th><th>FINSCHEME</th><th>DELINQUENCY</th><th>PORTFOLID SALE</th></tr></thead>";
+                    var count2 = data["inactiveAccounts"].length;
+                    //sorting based on Delinquency
+                    var first1 = [];
+                    var second1 = [];
+
+                    for (var j = 0; j < data["inactiveAccounts"].length; j++) {
+
+                        if (data.inactiveAccounts[j].acDelinquency == "Over 120 Days Past Due" || data.inactiveAccounts[j].acDelinquency == "91-120 Days Past Due" || data.inactiveAccounts[j].acDelinquency == "61-90 Days Past Due" || data.inactiveAccounts[j].acDelinquency == "31-60 Days Past Due" || data.inactiveAccounts[j].acDelinquency == "1-30 Days Past Due")
+                            first1.push(data.inactiveAccounts[j].acDelinquency + j);
+
+                        else
+                            second1.push(data.inactiveAccounts[j].acDelinquency + j);
+
+                    }
+
+                    first1.sort();
+                    first1.reverse();
+
+                    var third1 = first1.concat(second1);
+                    //showing the inactive account details
+                    for (var i = 0; i < third1.length && count2 <= 5; i++) {
+                        var numb = third1[i];
+                        var value = numb.charAt(numb.length - 1);
+                        if (data.inactiveAccounts[value].acDelinquency == "Over 120 Days Past Due" || data.inactiveAccounts[value].acDelinquency == "91-120 Days Past Due" || data.inactiveAccounts[value].acDelinquency == "61-90 Days Past Due" || data.inactiveAccounts[value].acDelinquency == "31-60 Days Past Due" || data.inactiveAccounts[value].acDelinquency == "1-30 Days Past Due") {
+                            trHTML = trHTML +
+                                '<tbody><tr><td >' + data.inactiveAccounts[value].acContractNo +
+                                '</td><td >' + data.inactiveAccounts[value].acProject +
+                                '</td><td >' + data.inactiveAccounts[value].acFinscheme +
+                                '</td><td style="color:red;">' + data.inactiveAccounts[value].acDelinquency +
+                                '</td><td >' + data.inactiveAccounts[value].acPortfoliosale +
+                                '</td></tr></tbody>';
+                        }
+                        else {
+                            trHTML = trHTML +
+                                '<tbody><tr><td >' + data.inactiveAccounts[value].acContractNo +
+                                '</td><td >' + data.inactiveAccounts[value].acProject +
+                                '</td><td >' + data.inactiveAccounts[value].acFinscheme +
+                                '</td><td >' + data.inactiveAccounts[value].acDelinquency +
+                                '</td><td >' + data.inactiveAccounts[value].acPortfoliosale +
+                                '</td></tr></tbody>';
+                        }
+
+                    }
+
+
+                    if (count2 < 5) {
+                        var msg = "-NOTHING";
+                        var msg2 = "FOLLOWS-";
+                        trHTML = trHTML + '<tbody><tr><td colspan="5">' + msg + '<br>' + msg2 + '</td></tr></tbody>';
+                    }
+                    else {
+                        var msg3 = "See Others in CALM";
+                        trHTML = trHTML + '<tbody><tr><td colspan="5">' + msg3 + '</td></tr></tbody>';
+                    }
+
+                    $('#inactive_account').append(trHTML);
+
+                    // Most recent transaction details
+
+                    var trHTM = "<thead></thead>  <tr><th>CONTRACT NO</th><th>TIME</th><th>DATE</th><th>AGENT</th><th>PURPOSE</th><th>CHANNEL</th></tr></thead>";
+
+                    for (var i = 0; i < data["transactions"].length; i++) {
+
+                        trHTM = trHTM +
+                            '<tbody><tr><td >' + data.transactions[i].transContractNo +
+                            '</td><td >' + data.transactions[i].transTime +
+                            '</td><td >' + data.transactions[i].transDate +
+                            '</td><td >' + data.transactions[i].transAgent +
+                            '</td><td >' + data.transactions[i].transPurpose +
+                            '</td><td >' + data.transactions[i].transChannel +
+                            '</td></tr></tbody>';
+                    }
+
+                    if (data["transactions"].length < 5) {
+                        var msg = "-NOTHING";
+                        var msg2 = "FOLLOWS-";
+                        trHTM = trHTM + '<tbody><tr><td colspan="6">' + msg + '<br>' + msg2 + '</td></tr></tbody>';
+                    }
+                    else if (data["transactions"].length >= 5) {
+                        var msg3 = "See Others in CALM";
+                        trHTM = trHTM + '<tbody><tr><td colspan="6">' + msg3 + '</td></tr></tbody>';
+                    }
+
+                    $('#most_recent_transaction').append(trHTM);
+
+                    // most recent ticket details
+
+                    var trHT = "<thead></thead>  <tr><th>CONTRACT NO</th><th>TICKET NO</th><th>REQUEST TYPE</th><th>STATE</th><th>AGING</th><th>SLA STATUS</th></tr></thead>";
+
+                    for (var i = 0; i < data["openTickets"].length; i++) {
+
+                        trHT = trHT +
+                            '<tbody><tr><td >' + data.openTickets[i].ticketContractNo +
+                            '</td><td >' + data.openTickets[i].ticketNo +
+                            '</td><td >' + data.openTickets[i].ticketRequestType +
+                            '</td><td >' + data.openTickets[i].ticketState +
+                            '</td><td >' + data.openTickets[i].ticketAging +
+                            '</td><td >' + data.openTickets[i].ticketSlaStatus +
+                            '</td></tr></tbody>';
+                    }
+
+                    if (data["openTickets"].length < 5) {
+                        var msg = "-NOTHING";
+                        var msg2 = "FOLLOWS-";
+                        trHT = trHT + '<tbody><tr><td colspan="6">' + msg + '<br>' + msg2 + '</td></tr></tbody>';
+                    }
+                    else if (data["openTickets"].length >= 5) {
+                        var msg3 = "See Others in CALM";
+                        trHT = trHT + '<tbody><tr><td colspan="6">' + msg3 + '</td></tr></tbody>';
+                    }
+
+                    $('#most_recent_open').append(trHT);
+
+
+                },
+
+                error: function (xhr, status, err, exception) {
+                    // debugger;
+                    // $('#invalid').text(JSON.parse(xhr.responseText).message);
+                    // $('#invalid').show();
+                    var message;
+                    var statusErrorMap = {
+                        '400': "Server understood the request, but request content was invalid.",
+                        '401': "Unauthorized access.",
+                        '403': "Forbidden resource can't be accessed.",
+                        '404': "File not found",
+                        '500': JSON.parse(xhr.responseText).message,
+                        '503': "Service unavailable.",
+
+
+                    };
+                    if (xhr.status) {
+                        message = statusErrorMap[xhr.status];
+                        if (!message) {
+                            message = "Unknown Error \n.";
+                        }
+                    } else if (exception == 'parsererror') {
+                        message = "Error.\nParsing JSON Request failed.";
+                    } else if (exception == 'timeout') {
+                        message = "Request Time out.";
+                    } else if (exception == 'abort') {
+                        message = "Request was aborted by the server";
+                    } else {
+                        message = "Unknown Error \n.";
+                    }
+                    $('#invalid').text(message);
+                }
+
+            });
+
+
+        });
+       
+    </script>
+
+</body>
+
+</html>
